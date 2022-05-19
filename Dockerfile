@@ -2,7 +2,7 @@
 # quando se usa :{numero} esta se especificando um versao da imagem que se deseja ser baixada
 from node:14
 # diretorio que sera o root da aplicacao
-workdir app
+workdir /src
 # copia esses arquivos para o diretorio . (workdir no caso app)
 copy package*.json .
 # sera o primeiro comando que ira rodar quando o container inicializar (instalando as dependencias do container)
