@@ -160,3 +160,5 @@
 
 // docker network connect {nome da conexão} {nome do container}
 // docker network disconnect {nome da conexão} {nome do container}
+
+//
