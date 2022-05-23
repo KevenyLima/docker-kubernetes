@@ -161,4 +161,219 @@
 // docker network connect {nome da conexão} {nome do container}
 // docker network disconnect {nome da conexão} {nome do container}
 
+//--------------------------------------------------------------------------------------------------
+
+// comandos para aws
+
+// comando para conectar-se pelo terminal com a maquina 1
+// ssh -i "nodekey2.pem" ec2-user@ec2-18-228-196-163.sa-east-1.compute.amazonaws.com
+
+// comando para conectar-se pelo terminal com a maquina 2
+// ssh -i "nodekey2.pem" ec2-user@ec2-15-228-191-140.sa-east-1.compute.amazonaws.com
+
+// comando para conectar-se pelo terminal com a maquina 3
+//  ssh -i "nodekey2.pem" ec2-user@ec2-15-229-9-146.sa-east-1.compute.amazonaws.com
+
+// observação para se conectar com a maquina sera necessário executar o comando acima estando no mesmo diretório da chave que libera o acesso (.pem)
+
+//---------------------------------------------------------------------------------------------
+// comandos para rodar na maquina linux
+// observação o linux da aws nao utiliza apt-get para gerenciador de pacotes e sim o yum
+
+// para update todos os pacotes
+// sudo yum update -y
+
+// instalando o docker no linux
+// sudo yum install docker
+
+// inicializar o docker no linux
+// sudo service docker start
+
+// comando para dar permissão de usuário para a maquina aws
+// sudo usermod -a -G docker ec2-user
+
+// mostrar as informações do docker
+// sudo docker info
+
+//-->para verificar se o swarm esta  no docker
+// sudo docker swarm init 
+
+// warning do comando sudo docker swarm init 
+// To add a worker to this swarm, run the following command:
+
+// docker swarm join --token SWMTKN-1-3sq05cdyqu34r560s7rmze2kyvttd0mwp30um07v77jshvbmpz-2r6l528bqh8uzjzbrqg5wsx62 172.31.30.55:2377
+
+// To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+// forca sair do swarm mesmo que ele seja o único que esta ativo e deixa o manager
+// sudo docker swarm leave -f 
+
+// adicionando workers para o swarm manager
+// sudo docker swarm join --token {token que o container manager mostrar}
+
+// listando os nodes que um manager node esta conectado
+// docker node ls
+
+// docker swarm init --advertise-addr {ip da instancia da maquina da aws}
+
+// rodando uma imagem com docker swarm (criando um serviço)
+
+// docker service create {nome do container} {flags adicionais} {nome da imagem} 
+
+// exemplo
+// docker service create --name nginxswarm -p 80:80 nginx
+
+//-----------------------------------------------------
+// observação somente o manager pode rodar  esse comandos 
+// docker service ls --> mostra os container que estão rodando no swarm
+
+//  removendo serviço swarm
+// docker service rm {nome do serviço}
+
+// orquestração com replicação(tasks)
+// docker service create --name {nome da task} --replicas {numero de replicas} -p 80:80 {nome da imagem}
+//exemplo
+// sudo docker service create --name nginxreplicas --replicas 3 -p 80:80 nginx
+
+// comando para mostrar o ip de conexão de um manager no swarm
+// docker swarm join-token manager
+
+//----------------------------------------------------------------------------------------------------------------------
+// utilizado no works para desligar essa maquina
+// sudo docker swarm leave --> vai ser liberado sendo listado pelo manager como down
+//-----------------------------------------------------------------------------------------------------------------------
+// macete para impedir que a maquina seja desconectado do terminal por inatividade
+// digite os comandos no terminal da maquina
+// vim ~/.ssh/config
+// ServerAliveInterval 50 --> da um ping no servidor a cada 50 segundos
+//-----------------------------------------------------------------------------------------------------------------------
+// observação um problema que acontece no docker swarm 
+// mesmo que a maquina que foi removida se reconecte ao swarm ele ainda sera listado como down e nao funcionar
+// a única solução e reiniciar o swarm do manager e conectar todos os works novamente
+
+// sudo docker service inspect {nome do service} --> descobrir mais sobre o service
+// docker service ps {nome do serviço} -->comando para listar os container pelo manager
 //
+
+//-------------------------------------------------------------------------------
+// usando docker-compose no swarm 
+
+
+// para criar arquivo no terminal
+// vim docker-compose.yaml
+// apertar i para entrar em mode de edição
+// escreve no arquivo compose
+// depois 
+// esc 
+// :x!
+//enter
+// sudo docker stack deploy -c {nome do arquivo} {nome do serviço}
+// exemplo 
+// sudo docker stack deploy -c docker-compose.yaml nginx_swarm
+//-----------------------------------------------------------------------------------------
+// serve para escalar um serviço --> criar replicas a partir de um serviço ja ativo
+// sudo docker service scale {nome do serviço}={numero de replicas}
+
+//-----------------------------------------------------------------------
+
+// comando para que um node pare de receber ordens de um manager(nao recebendo mais tasks)
+// docker node update --availability drain {id do node(container)} 
+// observação esse comando deve ser utilizado no manager
+
+// comando para que um node(container) passe a receber ordens de um manager
+// docker node update --availability active {id do node(container)} 
+
+//------------------------------------------------------------------------
+// atualizar a imagem de um serviço 
+// sudo docker service update --image {nome da nova imagem} {nome da imagem}
+
+// observação o swarm sempre tenta balancear as replicas de forma igual para cada maquina e caso nao haja maquinas suficientes para rodar apenas um node em cada ele colocara mais nodes(container) em uma mesma maquina
+
+// -------------------------------------------------------------------
+
+// criando network para services
+// o tipo da network criada e overlay
+
+// e necessário seguir dois passos
+
+// criar a network quando 
+// docker network create --driver overlay {nome da rede}
+
+// na criação do service adicione a flag seguinte
+// --network {nome da rede}
+
+// exemplo 
+// docker service create --name {nome do service} --replicas {numero de replicas} -p 80:80 --network swarm {nome da imagem}
+
+// observação o create service por default conecta todos os nodes a mesma rede a criação de um rede overlay serve para criar um escopo um rede isolada para alguns serviços especificados
+
+// adicionando uma network a um serviço apos a criação desse serviço 
+// docker service update --network-add swarm {nome do serviço}
+
+// ----------------------------------kubernetes-------------------------------------------------------------
+
+// palavras chaves 
+// control plane == manager do swarm 
+// nodes  == uma maquina na nuvem
+// deployment == maquina que roda uma imagem
+// pod == um ou mais container em um node
+// services == expõe os pods ao mundo externo
+// kuberctl  == cliente de linha de comando para kubernetes
+
+// minikube --> simula um ambiente de cloud kubernetes em um ambiente local
+
+// --------------------------configurando ambiente para kubernetes--------------------------------
+
+// install chocolatey no windows
+// execute no terminal do powershell como administrador
+// Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+
+// install o kubernetes-cli pelo chocolatey
+// choco install kubernetes-cli
+
+// instalar o minikube 
+// choco install minikube 
+//---------------------------------------------------------------------------
+// inicializando o minikube com o docker
+// minikube start --driver=docker
+// minikube stop
+
+// acessando o minikube
+// minikube dashboard  
+// para ter acesso a url que o minikube esta rodado
+// minikube dashboard  --url
+
+// ---------------------------------------------------------------------
+// criando um container deployment no kubernetes
+//kubectl create deployment {nome para o container} --image={imagem que sera buildada}
+
+// exemplo :
+// kubectl create deployment flask-deployment --image=battistti/flask-kub-projeto
+
+// observação e preciso que a imagem esteja no dockerHub para que possa buildar esse container
+
+
+// comandos kubernetes (kubectl)
+// kubectl get deployment --> listar todos os containers deployments 
+// kubectl describe deployments --> mostra os dados detalhados dos deployments
+
+// kubectl get pods --> para mostrar quais pods estão rodando
+// kubectl config view --> para mais detalhes de como esta configurado o kubernetes
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// (// snapshot --> serve para replicar uma maquina na aws com as mesmas configurações )
