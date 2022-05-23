@@ -1,0 +1,22 @@
+apiVersion: v1
+# tipo se e deployment ou service
+kind: Service
+# dados sobre o próprio service
+metadata:
+# nome do service que esta sendo gerah por esse arquivo
+  name: flask-service
+# especificações 
+spec:
+# aqui se cria o link entre o deployment e o service 
+  selector:
+  # nome do deployment que o service ira replicar
+    app: flask-app
+    # configurações das portas de acesso
+  ports:
+    - protocol: 'TCP'
+    # porta exporta para exterior 
+      port: 5000
+      # porta do container
+      targetPort: 5000
+  # tipo da rede kubernetes
+  type: LoadBalancer

@@ -360,19 +360,49 @@
 // kubectl get pods --> para mostrar quais pods estão rodando
 // kubectl config view --> para mais detalhes de como esta configurado o kubernetes
 
+// criando um service para expor um deployment
+// kubectl expose deployment <nome do deployment> --type=<tipo do service> --port=<port>
+// exemplo 
+// kubectl expose deployment flask-deployment --type=LoadBalancer --port=5000
 
+// para acessar o serviço
+// minikube service {nome do service} --> esse comando vai dar o ip de acesso e abrira o projeto em uma aba do navegador 
 
+// ------------------------------------------------------------------------------------------------------
 
+// kubectl get services --> mostra os serviços que estão sendo executados
+// kubectl describe services/{nome do service} --> mostra os detalhes dos serviços que estão sendo executados 
+//-----------------------------------------------------------------------
+// escalando os serviços no kubernetes
+// kubectl scale deployment/{nome do serviço} --replicas={numero de replicas}
 
+// observação para fazer o inverso e reduzir o numero de pods e so escrever um numero de replicas menor do que a atual e o kubernetes lidara de desligar alguns pods
+// --------------------------------------------------------------------------------
+// kubectl get rs --> listando o numero de replicas
 
+// atualizando uma imagem em um service
+// kubectl set image deployment/{nome do service} {nome do container } = {nova imagem}
 
+// kubectl rollout status deployment/{nome do serviço} --> mostra se uma atualização teve sucesso (caso uma versão de uma imagem nao exita o container nao ira rodar)
 
+// kubectl rollout undo deployment/{nome do serviço} --> para desfazer uma atualização
+//-----------------------------deletes---------------------------------------
+// kubectl delete service {nome do service} --> deleta o serviço (os pods nao poderão ser mais acessados sem um serviço para expo-los)
 
+// kubectl delete deployment {nome do deployment } --> deleta o service
 
+// -------------------------------------------------------------------
 
+// executando um arquivo declarativo kubernetes
+// kubectl apply -f {nome do arquivo declarativo kubernetes}
 
+// parando um service de forma declarativa
+// kubectl delete -f {nome do arquivo  declarativo kubernetes}
 
+//-----------------------------------------------------------------
+// observação para atualizar um projeto e so dar um apply novamente em um arquivo atualizado do service declarative 
 
+// observação e possível juntar aquivos yaml para rodar dois serviços com apenas um comando apenas separando cada serviço por tres traços (---)
 
 
 

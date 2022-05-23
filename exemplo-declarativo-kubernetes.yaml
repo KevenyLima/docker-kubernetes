@@ -1,0 +1,24 @@
+# versão utilizada da ferramenta
+apiVersion: apps/v1
+# tipo do arquivo (deployment,service)
+kind: Deployment
+# descrever algum objeto inserindo chaves como name
+metadata:
+  name: flask-app-deployment
+spec:
+  replicas: 4
+  matchLabels:
+    app: flask-app
+  template:
+    metadata:
+      labels:
+        app: flask-app
+    spec:
+      containers:
+        - name:
+# numero de replicas de nodes/pods
+replicas:
+# definir as especificações de containers como nome e imagem
+containers:
+
+# assistir a aula 176 de docker novamente
