@@ -404,6 +404,4 @@
 
 // observação e possível juntar aquivos yaml para rodar dois serviços com apenas um comando apenas separando cada serviço por tres traços (---)
 
-
-
 // (// snapshot --> serve para replicar uma maquina na aws com as mesmas configurações )
